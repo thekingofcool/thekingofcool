@@ -8,7 +8,7 @@ Fan of 崔健、Manny Pacquiao、Elon Musk；
 
 #### 现在在做的事：
 
-- 练习侧踹
+- 练习侧踹。
 
 #### 准备要做的事：
 
