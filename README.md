@@ -1,16 +1,18 @@
-### Hi there 👋
+thekingofcool.eth;
 
-<!--
-**thekingofcool/thekingofcool** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+前建筑结构工程师（2016-2017），现大数据开发工程师（2018-今），业余独立开发；
 
-Here are some ideas to get you started:
+赛博朋克，摇滚，拳击，马拉松，Decentralize Everything；
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+Fan of 崔健、Manny Pacquiao、Elon Musk；
+
+#### 现在在做的事：
+
+- 练习侧踹
+
+#### 准备要做的事：
+
+- 读更多的书，写更多的字；
+- 成为家里的支柱和灯塔；
+- 承担起自己的责任；
+- 保持竞技状态。
