@@ -8,9 +8,8 @@ Fan of 崔健、Manny Pacquiao、Elon Musk；
 
 #### 现在在做的事：
 
-- 读书，写字；
-- 练习侧踹;
-- 保持竞技状态。
+- To earn AWS Certified Solutions Architect – Professional;
+- 练习侧踹。
 
 #### 准备要做的事：
 
