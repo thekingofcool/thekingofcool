@@ -20,7 +20,7 @@ jobs:
 
       - name: Run update script
         env:
-          CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
         run: python fetch_strava_activities.py
