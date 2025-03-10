@@ -63,6 +63,20 @@ def get_strava_activities(access_token):
     else:
         raise Exception(f"Error fetching activities from Strava API: {response.status_code}")
 
+
+# Add this function before the update_readme function
+def format_time(seconds):
+    """Convert seconds to HH:MM:SS format"""
+    if seconds is None:
+        return "N/A"
+    
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    remaining_seconds = int(seconds % 60)
+    
+    return f"{hours:02d}:{minutes:02d}:{remaining_seconds:02d}"
+
+
 def update_readme(stats, activities):
     readme_path = "README.md"
     with open(readme_path, "r") as file:
