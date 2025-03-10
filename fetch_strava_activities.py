@@ -49,6 +49,14 @@ def get_strava_activities(access_token):
     else:
         raise Exception(f"Error fetching activities from Strava API: {response.status_code}")
 
+def format_time(seconds):
+    if seconds is None:
+        return "N/A"
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return f"{hours:02}:{minutes:02}:{seconds:02}"
+
 def update_readme(stats, activities):
     readme_path = "README.md"
 
@@ -68,12 +76,12 @@ def update_readme(stats, activities):
 
     - Username: {stats['username']}
     - Total Distance (Current Year): {total_distance_current_year / 1000:.2f} km
-    - Marathon PB: {marathon_pb // 3600}:{(marathon_pb % 3600) // 60}:{marathon_pb % 60} (HH:MM:SS) if marathon_pb else "N/A"
-    - Half-Marathon PB: {half_marathon_pb // 3600}:{(half_marathon_pb % 3600) // 60}:{half_marathon_pb % 60} (HH:MM:SS) if half_marathon_pb else "N/A"
-    - 10K PB: {ten_k_pb // 3600}:{(ten_k_pb % 3600) // 60}:{ten_k_pb % 60} (HH:MM:SS) if ten_k_pb else "N/A"
-    - 5K PB: {five_k_pb // 3600}:{(five_k_pb % 3600) // 60}:{five_k_pb % 60} (HH:MM:SS) if five_k_pb else "N/A"
+    - Marathon PB: {format_time(marathon_pb)}
+    - Half-Marathon PB: {format_time(half_marathon_pb)}
+    - 10K PB: {format_time(ten_k_pb)}
+    - 5K PB: {format_time(five_k_pb)}
     """
-    print(new_content)
+
     with open(readme_path, "w") as file:
         file.write(new_content)
 
