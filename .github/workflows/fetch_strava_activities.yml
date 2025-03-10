@@ -1,7 +1,13 @@
 name: Update Strava Stats
 
 on:
-  workflow_dispatch:  # 手动触发工作流
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight
+  workflow_dispatch:      # Manual trigger
+
+permissions:
+  contents: write        # Allows writing to repository
+  actions: write        # Allows workflow to run
 
 jobs:
   update-readme:
