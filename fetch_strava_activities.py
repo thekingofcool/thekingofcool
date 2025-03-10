@@ -65,14 +65,15 @@ def update_readme(stats, activities):
     # 更新 README 内容
     new_content = f"""
     ## Strava Statistics
-    - Name: {stats['firstname']} {stats['lastname']}
+
+    - Username: {stats['username']}
     - Total Distance (Current Year): {total_distance_current_year / 1000:.2f} km
     - Marathon PB: {marathon_pb // 3600}:{(marathon_pb % 3600) // 60}:{marathon_pb % 60} (HH:MM:SS) if marathon_pb else "N/A"
     - Half-Marathon PB: {half_marathon_pb // 3600}:{(half_marathon_pb % 3600) // 60}:{half_marathon_pb % 60} (HH:MM:SS) if half_marathon_pb else "N/A"
     - 10K PB: {ten_k_pb // 3600}:{(ten_k_pb % 3600) // 60}:{ten_k_pb % 60} (HH:MM:SS) if ten_k_pb else "N/A"
     - 5K PB: {five_k_pb // 3600}:{(five_k_pb % 3600) // 60}:{five_k_pb % 60} (HH:MM:SS) if five_k_pb else "N/A"
     """
-
+    print(new_content)
     with open(readme_path, "w") as file:
         file.write(new_content)
 
