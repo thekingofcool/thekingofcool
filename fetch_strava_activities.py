@@ -10,19 +10,32 @@ REFRESH_TOKEN = os.getenv("REFRESH_TOKEN")
 
 
 def refresh_access_token():
+    """Refresh the Strava access token"""
     url = "https://www.strava.com/oauth/token"
+    
+    # Check if environment variables exist
+    if not all([CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN]):
+        raise ValueError("Missing required environment variables. Please check CLIENT_ID, CLIENT_SECRET, and REFRESH_TOKEN")
+    
     payload = {
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
         'refresh_token': REFRESH_TOKEN,
         'grant_type': 'refresh_token'
     }
-    response = requests.post(url, data=payload)
-    if response.status_code == 200:
+    
+    try:
+        response = requests.post(url, data=payload)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        
         tokens = response.json()
         return tokens['access_token'], tokens['refresh_token']
-    else:
-        raise Exception(f"Error refreshing access token: {response.status_code}")
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        print(f"Response content: {response.text if 'response' in locals() else 'No response'}")
+        raise Exception(f"Error refreshing access token. Status code: {response.status_code if 'response' in locals() else 'No response'}")
+
 
 def get_strava_stats(access_token):
     url = "https://www.strava.com/api/v3/athlete"
