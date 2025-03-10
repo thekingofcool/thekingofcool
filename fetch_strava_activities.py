@@ -22,6 +22,7 @@ def refresh_access_token():
         tokens = response.json()
         return tokens['access_token'], tokens['refresh_token']
     else:
+        print(response.text)  # 打印错误响应
         raise Exception(f"Error refreshing access token: {response.status_code}")
 
 def get_strava_stats(access_token):
