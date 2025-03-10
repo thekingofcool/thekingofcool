@@ -79,36 +79,63 @@ def format_time(seconds):
 
 def update_readme(stats, activities):
     readme_path = "README.md"
-    with open(readme_path, "r") as file:
-        readme_content = file.read()
+    
+    # 检查文件是否存在，如果不存在则创建
+    if not os.path.exists(readme_path):
+        base_content = """# My Strava Stats
+This README is automatically updated with my latest Strava statistics.
+"""
+    else:
+        # 读取现有内容，但只保留非 Strava 相关部分
+        with open(readme_path, "r", encoding='utf-8') as file:
+            content = file.read()
+            base_content = content.split("## Strava Statistics")[0].strip()
 
     # 计算当前年度总距离
     current_year = time.localtime().tm_year
-    total_distance_current_year = sum(activity['distance'] for activity in activities if activity['start_date'].startswith(str(current_year)))
+    total_distance_current_year = sum(activity['distance'] for activity in activities 
+                                    if activity['start_date'].startswith(str(current_year)))
 
     # 获取 PB 信息
-    marathon_pb = min((activity['elapsed_time'] for activity in activities if activity['type'] == 'Run' and activity['distance'] >= 42195), default=None)
-    half_marathon_pb = min((activity['elapsed_time'] for activity in activities if activity['type'] == 'Run' and activity['distance'] >= 21097.5), default=None)
-    ten_k_pb = min((activity['elapsed_time'] for activity in activities if activity['type'] == 'Run' and activity['distance'] >= 10000), default=None)
-    five_k_pb = min((activity['elapsed_time'] for activity in activities if activity['type'] == 'Run' and activity['distance'] >= 5000), default=None)
+    marathon_pb = min((activity['elapsed_time'] for activity in activities 
+                      if activity['type'] == 'Run' and activity['distance'] >= 42195), default=None)
+    half_marathon_pb = min((activity['elapsed_time'] for activity in activities 
+                          if activity['type'] == 'Run' and activity['distance'] >= 21097.5), default=None)
+    ten_k_pb = min((activity['elapsed_time'] for activity in activities 
+                   if activity['type'] == 'Run' and activity['distance'] >= 10000), default=None)
+    five_k_pb = min((activity['elapsed_time'] for activity in activities 
+                    if activity['type'] == 'Run' and activity['distance'] >= 5000), default=None)
 
     # 更新 README 内容
-    new_content = f"""
-    ## Strava Statistics
+    strava_content = f"""
 
-    - Username: {stats['username']}
-    - Total Distance (Current Year): {total_distance_current_year / 1000:.2f} km
-    - Marathon PB: {format_time(marathon_pb)}
-    - Half-Marathon PB: {format_time(half_marathon_pb)}
-    - 10K PB: {format_time(ten_k_pb)}
-    - 5K PB: {format_time(five_k_pb)}
-    """
-    print(new_content)
-    with open(readme_path, "w") as file:
-        file.write(readme_content + new_content)
+## Strava Statistics
+
+- Username: {stats.get('username', 'N/A')}
+- Total Distance ({current_year}): {total_distance_current_year / 1000:.2f} km
+- Marathon PB: {format_time(marathon_pb)}
+- Half-Marathon PB: {format_time(half_marathon_pb)}
+- 10K PB: {format_time(ten_k_pb)}
+- 5K PB: {format_time(five_k_pb)}
+
+*Last Updated: {time.strftime('%Y-%m-%d %H:%M:%S')}*
+"""
+    
+    # 组合内容并写入文件
+    full_content = f"{base_content}\n{strava_content}"
+    with open(readme_path, "w", encoding='utf-8') as file:
+        file.write(full_content)
+    
+    print("README.md has been updated successfully!")
+
 
 if __name__ == "__main__":
-    access_token, refresh_token = refresh_access_token()
-    stats = get_strava_stats(access_token)
-    activities = get_strava_activities(access_token)
-    update_readme(stats, activities)
+    try:
+        access_token, refresh_token = refresh_access_token()
+        stats = get_strava_stats(access_token)
+        activities = get_strava_activities(access_token)
+        update_readme(stats, activities)
+        print("Successfully updated Strava statistics!")
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise
