@@ -13,7 +13,6 @@ def refresh_access_token():
     """Refresh the Strava access token"""
     url = "https://www.strava.com/oauth/token"
     
-    # Check if environment variables exist
     if not all([CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN]):
         raise ValueError("Missing required environment variables. Please check CLIENT_ID, CLIENT_SECRET, and REFRESH_TOKEN")
     
@@ -26,7 +25,7 @@ def refresh_access_token():
     
     try:
         response = requests.post(url, data=payload)
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
         
         tokens = response.json()
         return tokens['access_token'], tokens['refresh_token']
@@ -39,24 +38,18 @@ def refresh_access_token():
 
 def get_strava_stats(access_token):
     url = "https://www.strava.com/api/v3/athlete"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
+    headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         return response.json()
     else:
         raise Exception(f"Error fetching data from Strava API: {response.status_code}")
 
+
 def get_strava_activities(access_token):
     url = "https://www.strava.com/api/v3/athlete/activities"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    params = {
-        "per_page": 200,
-        "page": 1
-    }
+    headers = {"Authorization": f"Bearer {access_token}"}
+    params = {"per_page": 200, "page": 1}
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
         return response.json()
@@ -64,7 +57,6 @@ def get_strava_activities(access_token):
         raise Exception(f"Error fetching activities from Strava API: {response.status_code}")
 
 
-# Add this function before the update_readme function
 def format_time(seconds):
     """Convert seconds to HH:MM:SS format"""
     if seconds is None:
@@ -77,36 +69,69 @@ def format_time(seconds):
     return f"{hours:02d}:{minutes:02d}:{remaining_seconds:02d}"
 
 
+def calculate_normalized_time(elapsed_time, actual_distance, target_distance):
+    """Calculate normalized time based on actual distance"""
+    if elapsed_time is None or actual_distance == 0:
+        return None
+    return (elapsed_time * target_distance) / actual_distance
+
+
 def update_readme(stats, activities):
     readme_path = "README.md"
     
-    # 检查文件是否存在，如果不存在则创建
     if not os.path.exists(readme_path):
         base_content = """# My Strava Stats
 This README is automatically updated with my latest Strava statistics.
 """
     else:
-        # 读取现有内容，但只保留非 Strava 相关部分
         with open(readme_path, "r", encoding='utf-8') as file:
             content = file.read()
             base_content = content.split("## Strava Statistics")[0].strip()
 
-    # 计算当前年度总距离
     current_year = time.localtime().tm_year
     total_distance_current_year = sum(activity['distance'] for activity in activities 
                                     if activity['start_date'].startswith(str(current_year)))
 
-    # 获取 PB 信息
-    marathon_pb = min((activity['elapsed_time'] for activity in activities 
-                      if activity['type'] == 'Run' and activity['distance'] >= 42195), default=None)
-    half_marathon_pb = min((activity['elapsed_time'] for activity in activities 
-                          if activity['type'] == 'Run' and activity['distance'] >= 21097.5), default=None)
-    ten_k_pb = min((activity['elapsed_time'] for activity in activities 
-                   if activity['type'] == 'Run' and activity['distance'] >= 10000), default=None)
-    five_k_pb = min((activity['elapsed_time'] for activity in activities 
-                    if activity['type'] == 'Run' and activity['distance'] >= 5000), default=None)
+    # Constants for standard distances
+    MARATHON_DISTANCE = 42195
+    HALF_MARATHON_DISTANCE = 21097.5
+    TEN_K_DISTANCE = 10000
+    FIVE_K_DISTANCE = 5000
 
-    # 更新 README 内容
+    # Initialize PB variables
+    marathon_pb = float('inf')
+    half_marathon_pb = float('inf')
+    ten_k_pb = float('inf')
+    five_k_pb = float('inf')
+
+    # Calculate normalized PBs
+    for activity in activities:
+        if activity['type'] == 'Run':
+            distance = activity['distance']
+            time = activity['elapsed_time']
+            
+            if distance >= MARATHON_DISTANCE:
+                normalized_time = calculate_normalized_time(time, distance, MARATHON_DISTANCE)
+                marathon_pb = min(marathon_pb, normalized_time) if normalized_time else marathon_pb
+            
+            if distance >= HALF_MARATHON_DISTANCE:
+                normalized_time = calculate_normalized_time(time, distance, HALF_MARATHON_DISTANCE)
+                half_marathon_pb = min(half_marathon_pb, normalized_time) if normalized_time else half_marathon_pb
+            
+            if distance >= TEN_K_DISTANCE:
+                normalized_time = calculate_normalized_time(time, distance, TEN_K_DISTANCE)
+                ten_k_pb = min(ten_k_pb, normalized_time) if normalized_time else ten_k_pb
+            
+            if distance >= FIVE_K_DISTANCE:
+                normalized_time = calculate_normalized_time(time, distance, FIVE_K_DISTANCE)
+                five_k_pb = min(five_k_pb, normalized_time) if normalized_time else five_k_pb
+
+    # Convert inf to None for no records
+    marathon_pb = None if marathon_pb == float('inf') else int(marathon_pb)
+    half_marathon_pb = None if half_marathon_pb == float('inf') else int(half_marathon_pb)
+    ten_k_pb = None if ten_k_pb == float('inf') else int(ten_k_pb)
+    five_k_pb = None if five_k_pb == float('inf') else int(five_k_pb)
+
     strava_content = f"""
 
 ## Strava Statistics
@@ -121,7 +146,6 @@ This README is automatically updated with my latest Strava statistics.
 *Last Updated: {time.strftime('%Y-%m-%d %H:%M:%S')}*
 """
     
-    # 组合内容并写入文件
     full_content = f"{base_content}\n{strava_content}"
     with open(readme_path, "w", encoding='utf-8') as file:
         file.write(full_content)
