@@ -108,22 +108,22 @@ This README is automatically updated with my latest Strava statistics.
     for activity in activities:
         if activity['type'] == 'Run':
             distance = activity['distance']
-            time = activity['elapsed_time']
+            elapsed_time = activity['elapsed_time']
             
             if distance >= MARATHON_DISTANCE:
-                normalized_time = calculate_normalized_time(time, distance, MARATHON_DISTANCE)
+                normalized_time = calculate_normalized_time(elapsed_time, distance, MARATHON_DISTANCE)
                 marathon_pb = min(marathon_pb, normalized_time) if normalized_time else marathon_pb
             
             if distance >= HALF_MARATHON_DISTANCE:
-                normalized_time = calculate_normalized_time(time, distance, HALF_MARATHON_DISTANCE)
+                normalized_time = calculate_normalized_time(elapsed_time, distance, HALF_MARATHON_DISTANCE)
                 half_marathon_pb = min(half_marathon_pb, normalized_time) if normalized_time else half_marathon_pb
             
             if distance >= TEN_K_DISTANCE:
-                normalized_time = calculate_normalized_time(time, distance, TEN_K_DISTANCE)
+                normalized_time = calculate_normalized_time(elapsed_time, distance, TEN_K_DISTANCE)
                 ten_k_pb = min(ten_k_pb, normalized_time) if normalized_time else ten_k_pb
             
             if distance >= FIVE_K_DISTANCE:
-                normalized_time = calculate_normalized_time(time, distance, FIVE_K_DISTANCE)
+                normalized_time = calculate_normalized_time(elapsed_time, distance, FIVE_K_DISTANCE)
                 five_k_pb = min(five_k_pb, normalized_time) if normalized_time else five_k_pb
 
     # Convert inf to None for no records
