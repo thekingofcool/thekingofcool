@@ -1,9 +1,7 @@
 import requests
-import json
 import time
 import os
 
-# 替换为你的 Strava API 客户端 ID 和客户端密钥
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REFRESH_TOKEN = os.getenv("REFRESH_TOKEN")
@@ -97,53 +95,88 @@ This README is automatically updated with my latest Strava statistics.
     HALF_MARATHON_DISTANCE = 21097.5
     TEN_K_DISTANCE = 10000
     FIVE_K_DISTANCE = 5000
+    ONE_MILE_DISTANCE = 1609.34
+    ONE_K_DISTANCE = 1000
 
-    # Initialize PB variables
+    # Initialize PB variables and their dates
     marathon_pb = float('inf')
+    marathon_pb_date = None
     half_marathon_pb = float('inf')
+    half_marathon_pb_date = None
     ten_k_pb = float('inf')
+    ten_k_pb_date = None
     five_k_pb = float('inf')
+    five_k_pb_date = None
+    one_mile_pb = float('inf')
+    one_mile_pb_date = None
+    one_k_pb = float('inf')
+    one_k_pb_date = None
 
-    # Calculate normalized PBs
+    # Calculate normalized PBs and record PB dates
     for activity in activities:
         if activity['type'] == 'Run':
             distance = activity['distance']
             elapsed_time = activity['elapsed_time']
-            
+            activity_date = activity.get('start_date_local', activity['start_date'])  # Prefer local date if available
+
             if distance >= MARATHON_DISTANCE:
                 normalized_time = calculate_normalized_time(elapsed_time, distance, MARATHON_DISTANCE)
-                marathon_pb = min(marathon_pb, normalized_time) if normalized_time else marathon_pb
-            
+                if normalized_time and normalized_time < marathon_pb:
+                    marathon_pb = normalized_time
+                    marathon_pb_date = activity_date
+
             if distance >= HALF_MARATHON_DISTANCE:
                 normalized_time = calculate_normalized_time(elapsed_time, distance, HALF_MARATHON_DISTANCE)
-                half_marathon_pb = min(half_marathon_pb, normalized_time) if normalized_time else half_marathon_pb
-            
+                if normalized_time and normalized_time < half_marathon_pb:
+                    half_marathon_pb = normalized_time
+                    half_marathon_pb_date = activity_date
+
             if distance >= TEN_K_DISTANCE:
                 normalized_time = calculate_normalized_time(elapsed_time, distance, TEN_K_DISTANCE)
-                ten_k_pb = min(ten_k_pb, normalized_time) if normalized_time else ten_k_pb
-            
+                if normalized_time and normalized_time < ten_k_pb:
+                    ten_k_pb = normalized_time
+                    ten_k_pb_date = activity_date
+
             if distance >= FIVE_K_DISTANCE:
                 normalized_time = calculate_normalized_time(elapsed_time, distance, FIVE_K_DISTANCE)
-                five_k_pb = min(five_k_pb, normalized_time) if normalized_time else five_k_pb
+                if normalized_time and normalized_time < five_k_pb:
+                    five_k_pb = normalized_time
+                    five_k_pb_date = activity_date
 
-    # Convert inf to None for no records
-    marathon_pb = None if marathon_pb == float('inf') else int(marathon_pb)
-    half_marathon_pb = None if half_marathon_pb == float('inf') else int(half_marathon_pb)
-    ten_k_pb = None if ten_k_pb == float('inf') else int(ten_k_pb)
-    five_k_pb = None if five_k_pb == float('inf') else int(five_k_pb)
+            if distance >= ONE_MILE_DISTANCE:
+                normalized_time = calculate_normalized_time(elapsed_time, distance, ONE_MILE_DISTANCE)
+                if normalized_time and normalized_time < one_mile_pb:
+                    one_mile_pb = normalized_time
+                    one_mile_pb_date = activity_date
+
+            if distance >= ONE_K_DISTANCE:
+                normalized_time = calculate_normalized_time(elapsed_time, distance, ONE_K_DISTANCE)
+                if normalized_time and normalized_time < one_k_pb:
+                    one_k_pb = normalized_time
+                    one_k_pb_date = activity_date
+
+    # Convert inf to None for no records, and format PB dates
+    def pb_result(pb, pb_date):
+        if pb == float('inf'):
+            return "N/A"
+        date_str = pb_date[:10] if pb_date else ""
+        return f"{format_time(int(pb))} ({date_str})"
+
+    # Format UTC+8 time
+    utc8_time = time.gmtime(time.time() + 8 * 3600)
+    last_updated_str = time.strftime('%Y-%m-%d %H:%M:%S', utc8_time)
 
     strava_content = f"""
-
 ## Strava Statistics
-
 - Username: {stats.get('username', 'N/A')}
 - Total Distance ({current_year}): {total_distance_current_year / 1000:.2f} km
-- Marathon PB: {format_time(marathon_pb)}
-- Half-Marathon PB: {format_time(half_marathon_pb)}
-- 10K PB: {format_time(ten_k_pb)}
-- 5K PB: {format_time(five_k_pb)}
-
-*Last Updated: {time.strftime('%Y-%m-%d %H:%M:%S')}*
+- Marathon PB: {pb_result(marathon_pb, marathon_pb_date)}
+- Half-Marathon PB: {pb_result(half_marathon_pb, half_marathon_pb_date)}
+- 10K PB: {pb_result(ten_k_pb, ten_k_pb_date)}
+- 5K PB: {pb_result(five_k_pb, five_k_pb_date)}
+- 1 Mile PB: {pb_result(one_mile_pb, one_mile_pb_date)}
+- 1K PB: {pb_result(one_k_pb, one_k_pb_date)}
+*Last Updated: {last_updated_str}*
 """
     
     full_content = f"{base_content}\n{strava_content}"
