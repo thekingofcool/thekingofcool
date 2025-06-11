@@ -176,6 +176,7 @@ This README is automatically updated with my latest Strava statistics.
 - 5K PB: {pb_result(five_k_pb, five_k_pb_date)}
 - 1 Mile PB: {pb_result(one_mile_pb, one_mile_pb_date)}
 - 1K PB: {pb_result(one_k_pb, one_k_pb_date)}
+
 *Last Updated: {last_updated_str}*
 """
     
