@@ -2,7 +2,7 @@
 
 ## Strava Statistics
 - Username: thekingofcool
-- Total Distance (2025): 556.00 km
+- Total Distance (2025): 566.04 km
 - Marathon PB: 03:05:46 (2024-02-25)
 - Half-Marathon PB: 01:32:53 (2024-02-25)
 - 10K PB: 00:42:26 (2024-02-10)
@@ -10,4 +10,4 @@
 - 1 Mile PB: 00:06:08 (2025-06-06)
 - 1K PB: 00:03:48 (2025-06-06)
 
-*Last Updated: 2025-07-02 00:27:57*
+*Last Updated: 2025-07-03 00:27:16*
